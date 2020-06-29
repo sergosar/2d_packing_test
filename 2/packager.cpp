@@ -10,6 +10,26 @@
 //  Packager class implementation
 ///////////////////////////////////////////////////////////////////////////////
 
+int Packager::getSTRIPH() const
+{
+    return STRIPH;
+}
+
+void Packager::setSTRIPH(int value)
+{
+    STRIPH = value;
+}
+
+int Packager::getSTRIPW() const
+{
+    return STRIPW;
+}
+
+void Packager::setSTRIPW(int value)
+{
+    STRIPW = value;
+}
+
 void Packager::init(QString filename) {
     QFile file(filename);
 
@@ -26,6 +46,14 @@ void Packager::init(QString filename) {
         }
     }
     file.close();
+}
+
+void Packager::init(QList<QRect> rects, int H, int W)
+{
+    _rectangles.clear();
+    _rectangles = rects;
+    setSTRIPH(H);
+    setSTRIPW(W);
 }
 
 int Packager::getSize(void)
@@ -45,11 +73,11 @@ const QRect Packager::Level::put(const QRect &rect, bool f, bool leftJustified)
 
     if (f) {
         if (leftJustified) {
-            newRect.setRect(floor, RenderArea::STRIPH - (bottom + rect.height() + 1),
+            newRect.setRect(floor, Packager.get - (bottom + rect.height() + 1),
                             rect.width(), rect.height());
         } else {
             // 'ceiling' is used for right-justified rectangles packed on the floor
-            newRect.setRect(RenderArea::STRIPW - (ceiling + rect.width()),
+            newRect.setRect(STRIPW - (ceiling + rect.width()),
                             RenderArea::STRIPH - (bottom + rect.height() + 1),
                             rect.width(), rect.height());
             ceiling += rect.width();

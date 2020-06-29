@@ -1,6 +1,6 @@
-QT       += core gui
+QT       += core gui widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 CONFIG += c++11
 
@@ -26,8 +26,7 @@ HEADERS += \
     renderarea.h \
     window.h
 
-FORMS += \
-    mainwindow.ui
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -2,15 +2,13 @@
 #define WINDOW_H
 #include <QWidget>
 
-
-
 class QLabel;
 class QRadioButton;
 class QGridLayout;
 class QSlider;
 class RenderArea;
-class QLineEdit;
 class QTableWidget;
+class QLineEdit;
 
 class Window : public QWidget
 {
@@ -24,13 +22,21 @@ private slots:
     void inpChanged();
     void parChanged();
 
+    void removeRow();
+    void calculate();
+
 private:
     RenderArea *renderArea;
     QLabel *parLabel;
     QSlider *paramSlider;
-    QLineEdit *m_hle;
-    QLineEdit *m_wle;
     QTableWidget *m_table;
+    QLineEdit *m_wle;
+    QLineEdit *m_hle;
+
+
+    int m_width;
+    int m_height;
+
 };
 
 #endif // WINDOW_H

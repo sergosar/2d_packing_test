@@ -29,11 +29,15 @@ protected:
 
 private:
     QList<QRect> _rectangles;
+    int STRIPH;
+    int STRIPW;
+
 
 public:
     Packager(void){}
 
     void init(QString filename);
+    void init(QList<QRect> rects, int H, int W);
     int getSize(void);
     void UseAlgorithm(void);
     void SetParameter(qreal param) {algorithm->setParam(param);}
@@ -60,5 +64,9 @@ public:
         int initW;
         int ceiling;
     };
+    int getSTRIPH() const;
+    void setSTRIPH(int value);
+    int getSTRIPW() const;
+    void setSTRIPW(int value);
 };
 #endif // PACKEGER_H
