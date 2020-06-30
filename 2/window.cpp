@@ -84,9 +84,11 @@ Window::Window()
     mainLayout->addWidget(m_table, 3, 1, 3, 3);
     mainLayout->addWidget(calcBtn, 7, 1, 1, 2);
 
+    mainLayout->sizeConstraint();
+
     setLayout(mainLayout);
     setWindowTitle(tr("Тестовое задание по двумерной упаковке"));
-
+    this->setFixedSize(600,900);
     connect(addBtn, &QPushButton::clicked, [=](){
         this->m_table->setRowCount(m_table->rowCount() + 1);
     } );
@@ -146,7 +148,9 @@ void Window::calculate()
             rects.push_back(rect);
         }
 
-    renderArea->fillArea(rects);
+    renderArea->setSTRIPH(m_height);
+    renderArea->setSTRIPW(m_width);
+    renderArea->fillArea(rects, m_height, m_width);
     renderArea->update();
 }
 

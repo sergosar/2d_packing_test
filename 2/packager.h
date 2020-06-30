@@ -16,7 +16,7 @@ class FCNR
 public:
     FCNR(){}
 
-    const QList<QRect> pack(const QList<QRect> rects);
+    const QList<QRect> pack(const QList<QRect> rects, int H, int W);
     void setParam(qreal param) {}
 };
 
@@ -53,10 +53,10 @@ public:
                                                 initW(w),
                                                 ceiling(0){}
 
-        const QRect put(const QRect &rect, bool f=true, bool leftJustified=true);
-        bool ceilingFeasible(const QRect &rect, const QList<QRect> existing);
-        bool floorFeasible(const QRect &rect);
-        int getSpace(bool f=true);
+        const QRect put(const QRect &rect,int H, int W, bool f=true, bool leftJustified=true ); //!!!!!!!
+        bool ceilingFeasible(const QRect &rect, const QList<QRect> existing, int H, int W);
+        bool floorFeasible(const QRect &rect, int W);
+        int getSpace(bool f=true, int W=0);
 
         int bottom;
         int height;

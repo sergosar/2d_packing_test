@@ -21,7 +21,7 @@ public:
     void setParameter(qreal param) {packager.SetParameter(param);}
     void reuseAlg() {packager.UseAlgorithm();}
 
-    void fillArea(QList<QRect> rects);
+    void fillArea(QList<QRect> rects, int H, int W);
 
     int getSTRIPH() const;
     void setSTRIPH(int value);

@@ -64,28 +64,28 @@ int Packager::getSize(void)
 void Packager::UseAlgorithm(void)
 {
     rectangles.clear();
-    rectangles = algorithm->pack(_rectangles);
+    rectangles = algorithm->pack(_rectangles,STRIPH, STRIPW);
 }
 
-const QRect Packager::Level::put(const QRect &rect, bool f, bool leftJustified)
+const QRect Packager::Level::put(const QRect &rect, int H, int W,bool f, bool leftJustified )
 {
     QRect newRect;
 
     if (f) {
         if (leftJustified) {
-            newRect.setRect(floor, Packager.get - (bottom + rect.height() + 1),
+            newRect.setRect(floor, H - (bottom + rect.height() + 1),
                             rect.width(), rect.height());
         } else {
             // 'ceiling' is used for right-justified rectangles packed on the floor
-            newRect.setRect(STRIPW - (ceiling + rect.width()),
-                            RenderArea::STRIPH - (bottom + rect.height() + 1),
+            newRect.setRect(W - (ceiling + rect.width()),
+                            H - (bottom + rect.height() + 1),
                             rect.width(), rect.height());
             ceiling += rect.width();
         }
         floor += rect.width();
     } else {
-        newRect.setRect(RenderArea::STRIPW - (ceiling + rect.width()),
-                        RenderArea::STRIPH - (bottom + height + 1),
+        newRect.setRect(W - (ceiling + rect.width()),
+                        H - (bottom + height + 1),
                         rect.width(), rect.height());
         ceiling += rect.width();
     }
@@ -93,11 +93,11 @@ const QRect Packager::Level::put(const QRect &rect, bool f, bool leftJustified)
     return newRect;
 }
 
-bool Packager::Level::ceilingFeasible(const QRect &rect, const QList<QRect> existing)
+bool Packager::Level::ceilingFeasible(const QRect &rect, const QList<QRect> existing, int H, int W)
 {
     QRect testRect;
-    testRect.setRect(RenderArea::STRIPW - (ceiling + rect.width()),
-                     RenderArea::STRIPH - (bottom + height + 1),
+    testRect.setRect(W - (ceiling + rect.width()),
+                     H - (bottom + height + 1),
                      rect.width(), rect.height());
     bool intersected = false;
     for (int i = 0; i < existing.size(); i++) {
@@ -106,21 +106,21 @@ bool Packager::Level::ceilingFeasible(const QRect &rect, const QList<QRect> exis
             break;
         }
     }
-    bool fit = rect.width() <= (RenderArea::STRIPW - ceiling - initW);
+    bool fit = rect.width() <= (W - ceiling - initW);
     return fit && !intersected;
 }
 
-bool Packager::Level::floorFeasible(const QRect &rect)
+bool Packager::Level::floorFeasible(const QRect &rect, int W)
 {
-    return rect.width() <= (RenderArea::STRIPW - floor);
+    return rect.width() <= (W - floor);
 }
 
-int Packager::Level::getSpace(bool f)
+int Packager::Level::getSpace(bool f, int W)
 {
     if (f) {
-        return RenderArea::STRIPW - floor;
+        return W - floor;
     } else {
-        return RenderArea::STRIPW - ceiling - initW;
+        return W - ceiling - initW;
     }
 }
 
@@ -138,7 +138,7 @@ static bool decreasingWidthComparsion(const QRect &r1, const QRect &r2)
     return r1.width() >= r2.width();
 }
 
-const QList<QRect> FCNR::pack(const QList<QRect> rects)
+const QList<QRect> FCNR::pack(const QList<QRect> rects, int H, int W)
 {
     QList<QRect> unpacked = rects;
     qSort(unpacked.begin(), unpacked.end(), decreasingHeightComparsion);
@@ -147,14 +147,14 @@ const QList<QRect> FCNR::pack(const QList<QRect> rects)
     Packager::Level level(0, unpacked[0].height(), 0, unpacked[0].width());
     QList<QRect> packed;
 
-    packed.push_back(level.put(unpacked[0]));
+    packed.push_back(level.put(unpacked[0],H,W));
     levels.push_back(level);
 
     for (int i = 1; i < unpacked.size(); i++) {
         int found = -1;
-        int min = RenderArea::STRIPW;
+        int min = W;
         for (int j = 0; j < levels.size(); j++) {
-            if (levels[j].floorFeasible(unpacked[i])) {
+            if (levels[j].floorFeasible(unpacked[i], W)) {
                 if (levels[j].getSpace() < min) {
                     found = j;
                     min = levels[j].getSpace();
@@ -162,12 +162,12 @@ const QList<QRect> FCNR::pack(const QList<QRect> rects)
             }
         }
         if (found > -1) { // floor-pack on existing level
-            packed.push_back(levels[found].put(unpacked[i]));
+            packed.push_back(levels[found].put(unpacked[i],H,W));
         } else {
             int found = -1;
-            int min = RenderArea::STRIPW;
+            int min = W;
             for (int j = 0; j < levels.size(); j++) {
-                if (levels[j].ceilingFeasible(unpacked[i], packed)) {
+                if (levels[j].ceilingFeasible(unpacked[i], packed,H , W)) {
                     if (levels[j].getSpace(false) < min) {
                         found = j;
                         min = levels[j].getSpace(false);
@@ -175,11 +175,11 @@ const QList<QRect> FCNR::pack(const QList<QRect> rects)
                 }
             }
             if (found > -1) { // ceiling-pack on existing level
-                packed.push_back(levels[found].put(unpacked[i], false));
+                packed.push_back(levels[found].put(unpacked[i], false,H,W));
             } else { // a new level
                 Packager::Level newLevel(levels.last().bottom + levels.last().height,
                                          unpacked[i].height(), 0, unpacked[i].width());
-                packed.push_back(newLevel.put(unpacked[i]));
+                packed.push_back(newLevel.put(unpacked[i],H,W));
                 levels.push_back(newLevel);
             }
         }
