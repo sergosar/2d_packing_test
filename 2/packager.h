@@ -25,7 +25,7 @@ public:
 class Packager
 {
 protected:
-    FCNR* algorithm;
+    FCNR* algorithm;// убрать
 
 private:
     QList<QRect> _rectangles;
@@ -35,14 +35,17 @@ private:
 
 public:
     Packager(void){}
-
+    const QList<QRect> pack(const QList<QRect> rects, int H, int W);
     void init(QString filename);
     void init(QList<QRect> rects, int H, int W);
     int getSize(void);
     void UseAlgorithm(void);
     void SetParameter(qreal param) {algorithm->setParam(param);}
 
+    QList<QString> subtruct(QList<QRect> full, QList<QRect> packed);
+
     QList<QRect> rectangles;
+    QList<QRect> unpacked;
 
     class Level
     {

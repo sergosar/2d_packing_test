@@ -68,7 +68,7 @@ Window::Window()
     m_table->setColumnCount(3);
 
     QStringList colNames;
-    colNames << "Высота" << "Ширина" << "Количество";
+    colNames << "Высота" << "Ширина" << "Количество"; //, не работает , почему!!!                           !!!
     m_table->setVerticalHeaderLabels(colNames);
 
     for (int i = 0; i < m_table->columnCount(); ++i)
@@ -89,10 +89,9 @@ Window::Window()
     setLayout(mainLayout);
     setWindowTitle(tr("Тестовое задание по двумерной упаковке"));
     this->setFixedSize(600,900);
-    connect(addBtn, &QPushButton::clicked, [=](){
-        this->m_table->setRowCount(m_table->rowCount() + 1);
-    } );
 
+
+    connect(addBtn, SIGNAL(clicked()), this, SLOT(addRow()));
     connect(remBtn, SIGNAL(clicked()), this, SLOT(removeRow()) );
     connect(calcBtn, SIGNAL(clicked()), this, SLOT(calculate()));
 
@@ -121,6 +120,11 @@ void Window::parChanged()
     renderArea->setParameter(value);
     renderArea->reuseAlg();
     renderArea->update();
+}
+
+void Window::addRow()
+{
+    m_table->setRowCount(m_table->rowCount()+1);
 }
 
 void Window::removeRow()

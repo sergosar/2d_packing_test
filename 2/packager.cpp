@@ -51,6 +51,7 @@ void Packager::init(QString filename) {
 void Packager::init(QList<QRect> rects, int H, int W)
 {
     _rectangles.clear();
+    unpacked.clear();
     _rectangles = rects;
     setSTRIPH(H);
     setSTRIPW(W);
@@ -64,7 +65,17 @@ int Packager::getSize(void)
 void Packager::UseAlgorithm(void)
 {
     rectangles.clear();
-    rectangles = algorithm->pack(_rectangles,STRIPH, STRIPW);
+    rectangles = this->pack(_rectangles,STRIPH, STRIPW);
+    //unpacked = _rectangles;
+
+}
+
+QList<QString> Packager::subtruct(QList<QRect> full, QList<QRect> packed)
+{
+    for(QRect rect: packed) {
+
+
+    }
 }
 
 const QRect Packager::Level::put(const QRect &rect, int H, int W,bool f, bool leftJustified )
@@ -110,7 +121,7 @@ bool Packager::Level::ceilingFeasible(const QRect &rect, const QList<QRect> exis
     return fit && !intersected;
 }
 
-bool Packager::Level::floorFeasible(const QRect &rect, int W)
+bool Packager::Level::floorFeasible(const QRect &rect, int W)//проверка на укладку очередного прямоугольника на ширину
 {
     return rect.width() <= (W - floor);
 }
@@ -138,7 +149,7 @@ static bool decreasingWidthComparsion(const QRect &r1, const QRect &r2)
     return r1.width() >= r2.width();
 }
 
-const QList<QRect> FCNR::pack(const QList<QRect> rects, int H, int W)
+const QList<QRect>Packager::pack(const QList<QRect> rects, int H, int W)
 {
     QList<QRect> unpacked = rects;
     qSort(unpacked.begin(), unpacked.end(), decreasingHeightComparsion);
@@ -175,15 +186,18 @@ const QList<QRect> FCNR::pack(const QList<QRect> rects, int H, int W)
                 }
             }
             if (found > -1) { // ceiling-pack on existing level
-                packed.push_back(levels[found].put(unpacked[i], false,H,W));
-            } else { // a new level
+                packed.push_back(levels[found].put(unpacked[i], H,W, false));
+            } else  if (levels.last().bottom + levels.last().height+unpacked[i].height()<=H){ // a new level, условие на переполнение высоты
                 Packager::Level newLevel(levels.last().bottom + levels.last().height,
                                          unpacked[i].height(), 0, unpacked[i].width());
                 packed.push_back(newLevel.put(unpacked[i],H,W));
                 levels.push_back(newLevel);
-            }
+            } else {
+                this->unpacked.push_back(unpacked[i]);
+            }          //заполнение unpucked
         }
     }
+
     return packed;
 }
 

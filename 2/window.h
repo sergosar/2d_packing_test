@@ -22,6 +22,7 @@ private slots:
     void inpChanged();
     void parChanged();
 
+    void addRow();
     void removeRow();
     void calculate();
 
