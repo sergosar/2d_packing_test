@@ -23,6 +23,11 @@ void RenderArea::setSTRIPW(int value)
     STRIPW = value;
 }
 
+QList<QString> RenderArea::getUnList()
+{
+    return packager.unList();
+}
+
 RenderArea::RenderArea(QWidget *parent)
     : QWidget(parent)
 {
@@ -74,7 +79,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
         painter.drawRect(packager.rectangles[i].translated(QPoint(10,10)));
         painter.restore();
     }
-    qDebug("optimal = %d, obtained = %d", sumSpace / STRIPW, STRIPH - minY);
+   // qDebug("optimal = %d, obtained = %d", sumSpace / STRIPW, STRIPH - minY);
 }
 
 

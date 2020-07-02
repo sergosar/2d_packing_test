@@ -42,7 +42,7 @@ public:
     void UseAlgorithm(void);
     void SetParameter(qreal param) {algorithm->setParam(param);}
 
-    QList<QString> subtruct(QList<QRect> full, QList<QRect> packed);
+    QList<QString> unList();
 
     QList<QRect> rectangles;
     QList<QRect> unpacked;

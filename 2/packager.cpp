@@ -70,13 +70,30 @@ void Packager::UseAlgorithm(void)
 
 }
 
-QList<QString> Packager::subtruct(QList<QRect> full, QList<QRect> packed)
+static bool decreasingHeightComparsion(const QRect &r1, const QRect &r2)
 {
-    for(QRect rect: packed) {
-
-
-    }
+    return r1.height() >= r2.height();
 }
+
+// НОВОЕ
+QList<QString> Packager::unList()
+{
+    std::sort(unpacked.begin(), unpacked.end(), decreasingHeightComparsion);
+    QList<QString> uList;
+    QString temp ="";
+    for(QRect rect: unpacked){
+        if(temp.isEmpty()) {
+            temp = QString(rect.height()) + " " + rect.width()+ " " + "1";
+        } else if(temp.split(" ")[0].toInt()==rect.height() && temp.split(" ")[1].toInt()==rect.width()) {
+            temp=QString(rect.height()) + " " + rect.width()+ " " + temp.split(" ")[2].toInt()+1;
+        } else {
+            uList.push_back(temp);
+            temp="";
+        }
+    }
+    return uList;
+}
+//
 
 const QRect Packager::Level::put(const QRect &rect, int H, int W,bool f, bool leftJustified )
 {
@@ -139,10 +156,7 @@ int Packager::Level::getSpace(bool f, int W)
 //  Algorithm class implementation
 ///////////////////////////////////////////////////////////////////////////////
 
-static bool decreasingHeightComparsion(const QRect &r1, const QRect &r2)
-{
-    return r1.height() >= r2.height();
-}
+
 
 static bool decreasingWidthComparsion(const QRect &r1, const QRect &r2)
 {
@@ -152,7 +166,7 @@ static bool decreasingWidthComparsion(const QRect &r1, const QRect &r2)
 const QList<QRect>Packager::pack(const QList<QRect> rects, int H, int W)
 {
     QList<QRect> unpacked = rects;
-    qSort(unpacked.begin(), unpacked.end(), decreasingHeightComparsion);
+    std::sort(unpacked.begin(), unpacked.end(), decreasingHeightComparsion);
 
     QList<Packager::Level> levels;
     Packager::Level level(0, unpacked[0].height(), 0, unpacked[0].width());

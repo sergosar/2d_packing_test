@@ -1,5 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
+#include <QComboBox>
 #include <QWidget>
 
 class QLabel;
@@ -33,6 +34,7 @@ private:
     QTableWidget *m_table;
     QLineEdit *m_wle;
     QLineEdit *m_hle;
+    QComboBox *m_cbbx;
 
 
     int m_width;

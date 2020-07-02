@@ -28,6 +28,7 @@ public:
 
     int getSTRIPW() const;
     void setSTRIPW(int value);
+    QList<QString> getUnList();             // !!!
 
 protected:
     void paintEvent(QPaintEvent *event);

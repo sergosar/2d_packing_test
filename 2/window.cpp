@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QPushButton>
 #include <QtGui>
+#include <QComboBox>
 
 
 #include "renderarea.h"
@@ -75,6 +76,12 @@ Window::Window()
         m_table->setColumnWidth(i, this->width() / 7.95 );
 
     QPushButton *calcBtn = new QPushButton("Рассчитать");
+     // НОВОЕ
+    m_cbbx = new QComboBox;
+     // НОВОЕ
+//overRslt->set
+
+
 
     mainLayout->addWidget(sizeLbl, 2, 0, Qt::AlignLeft );
     mainLayout->addWidget(tableLbl, 2, 2, Qt::AlignRight);
@@ -83,6 +90,7 @@ Window::Window()
     mainLayout->addLayout(bLt, 5, 0, Qt::AlignCenter);
     mainLayout->addWidget(m_table, 3, 1, 3, 3);
     mainLayout->addWidget(calcBtn, 7, 1, 1, 2);
+    mainLayout->addWidget(m_cbbx, 7, 0, Qt::AlignCenter);
 
     mainLayout->sizeConstraint();
 
@@ -135,6 +143,7 @@ void Window::removeRow()
 
 void Window::calculate()
 {
+    m_cbbx->clear();
     if (m_hle->text().isEmpty() && m_wle->text().isEmpty())
         return;
 
@@ -156,5 +165,11 @@ void Window::calculate()
     renderArea->setSTRIPW(m_width);
     renderArea->fillArea(rects, m_height, m_width);
     renderArea->update();
+    // НОВОЕ
+    for(QString str: renderArea->getUnList()) {
+        m_cbbx->addItem(str);
+    }
+ // НОВОЕ
+
 }
 
