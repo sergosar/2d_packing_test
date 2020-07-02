@@ -83,14 +83,16 @@ QList<QString> Packager::unList()
     QString temp ="";
     for(QRect rect: unpacked){
         if(temp.isEmpty()) {
-            temp = QString(rect.height()) + " " + rect.width()+ " " + "1";
+
+            temp = QString::number(rect.height()) + " " + QString::number(rect.width())+ " " + "1";
         } else if(temp.split(" ")[0].toInt()==rect.height() && temp.split(" ")[1].toInt()==rect.width()) {
-            temp=QString(rect.height()) + " " + rect.width()+ " " + temp.split(" ")[2].toInt()+1;
+            temp=QString::number(rect.height()) + " " + QString::number(rect.width())+ " " + QString::number(temp.split(" ")[2].toInt()+1);
         } else {
             uList.push_back(temp);
             temp="";
         }
     }
+    uList.push_back(temp);
     return uList;
 }
 //
