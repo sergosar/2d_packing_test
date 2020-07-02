@@ -89,7 +89,7 @@ QList<QString> Packager::unList()
             temp=QString::number(rect.height()) + " " + QString::number(rect.width())+ " " + QString::number(temp.split(" ")[2].toInt()+1);
         } else {
             uList.push_back(temp);
-            temp="";
+            temp=QString::number(rect.height()) + " " + QString::number(rect.width())+ " " + "1";
         }
     }
     uList.push_back(temp);
