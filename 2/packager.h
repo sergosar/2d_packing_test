@@ -11,21 +11,13 @@
 //  Offline algorithms
 ///////////////////////////////////////////////////////////////////////////////
 
-class FCNR
-{
-public:
-    FCNR(){}
 
-    const QList<QRect> pack(const QList<QRect> rects, int H, int W);
-    void setParam(qreal param) {}
-};
 
 
 ///////////////////////////////////////////////////////
 class Packager
 {
-protected:
-    FCNR* algorithm;// убрать
+
 
 private:
     QList<QRect> _rectangles;
@@ -40,7 +32,7 @@ public:
     void init(QList<QRect> rects, int H, int W);
     int getSize(void);
     void UseAlgorithm(void);
-    void SetParameter(qreal param) {algorithm->setParam(param);}
+
 
     QList<QString> unList();
 

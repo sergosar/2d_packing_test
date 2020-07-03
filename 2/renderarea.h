@@ -18,7 +18,7 @@ public:
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
-    void setParameter(qreal param) {packager.SetParameter(param);}
+ //   void setParameter(qreal param) {packager.SetParameter(param);}
     void reuseAlg() {packager.UseAlgorithm();}
 
     void fillArea(QList<QRect> rects, int H, int W);
@@ -38,7 +38,7 @@ private:
     int STRIPW;
     QPixmap pixmap;
     Packager packager;
-    FCNR    floorCeil;
+ //   FCNR    floorCeil;
 };
 
 #endif // RENDERAREA_H

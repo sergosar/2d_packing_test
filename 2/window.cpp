@@ -6,6 +6,9 @@
 #include <QPushButton>
 #include <QtGui>
 #include <QComboBox>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QSpinBox>
 
 
 #include "renderarea.h"
@@ -16,21 +19,33 @@ Window::Window()
 {
     renderArea = new RenderArea;
 
-    paramSlider = new QSlider(Qt::Vertical);
-    paramSlider->setTickInterval(10);
 
-    connect(paramSlider, SIGNAL(sliderMoved(int)),
-            this, SLOT(parChanged()));
+    scrollArea = new QScrollArea;
+    scrollArea->setWidget(renderArea);
 
-    parLabel = new QLabel(tr("0"));
-    parLabel->setBuddy(paramSlider);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    qvsb = scrollArea->verticalScrollBar();
+
+
+
+
+
+//    paramSlider = new QSlider(Qt::Vertical);
+//    paramSlider->setTickInterval(10);
+
+//    connect(paramSlider, SIGNAL(sliderMoved(int)),
+//            this, SLOT(parChanged()));
+
+//    parLabel = new QLabel(tr("0"));
+//    parLabel->setBuddy(paramSlider);
 
     QGridLayout *mainLayout = new QGridLayout(this);
     mainLayout->setColumnStretch(0, 1);
     mainLayout->setColumnStretch(3, 1);
-    mainLayout->addWidget(renderArea, 0, 0, 1, 3);
-    mainLayout->addWidget(paramSlider, 0, 3);
-    mainLayout->addWidget(parLabel, 1, 3);
+    mainLayout->addWidget(scrollArea, 0, 0, 1, 3);
+//    mainLayout->addWidget(paramSlider, 0, 3);
+//    mainLayout->addWidget(parLabel, 1, 3);
 
     ///////////////////////////////////////
 
@@ -43,12 +58,12 @@ Window::Window()
     m_hle = new QLineEdit;
     m_hle->setPlaceholderText("высота");
     m_hle->setFixedWidth(100);
-    m_hle->setValidator(new QIntValidator(10,1000,this));
+    m_hle->setValidator(new QIntValidator(10,9999,this));
 
     m_wle = new QLineEdit;
     m_wle->setPlaceholderText("ширина");
     m_wle->setFixedWidth(100);
-    m_wle->setValidator(new QIntValidator(10,1000,this));
+    m_wle->setValidator(new QIntValidator(10,9999,this));
 
     QHBoxLayout *hhbLt = new QHBoxLayout;
     hhbLt->addWidget(hLbl);
@@ -68,12 +83,13 @@ Window::Window()
     m_table = new QTableWidget;
     m_table->setColumnCount(3);
 
+
     QStringList colNames;
     colNames << "Высота" << "Ширина" << "Количество"; //, не работает , почему!!!                           !!!
-    m_table->setVerticalHeaderLabels(colNames);
+    m_table->setHorizontalHeaderLabels(colNames);
 
     for (int i = 0; i < m_table->columnCount(); ++i)
-        m_table->setColumnWidth(i, this->width() / 7.95 );
+        m_table->setColumnWidth(i, this->width() / 7.51 );
 
     QPushButton *calcBtn = new QPushButton("Рассчитать");
      // НОВОЕ
@@ -88,7 +104,7 @@ Window::Window()
     mainLayout->addLayout(hhbLt, 3, 0, Qt::AlignLeft);
     mainLayout->addLayout(whbLt, 4, 0, Qt::AlignLeft);
     mainLayout->addLayout(bLt, 5, 0, Qt::AlignCenter);
-    mainLayout->addWidget(m_table, 3, 1, 3, 3);
+    mainLayout->addWidget(m_table, 3, 1, 3, 3 );
     mainLayout->addWidget(calcBtn, 7, 1, 1, 2);
     mainLayout->addWidget(m_cbbx, 7, 0, Qt::AlignCenter);
 
@@ -96,7 +112,8 @@ Window::Window()
 
     setLayout(mainLayout);
     setWindowTitle(tr("Тестовое задание по двумерной упаковке"));
-    this->setFixedSize(600,900);
+    this->resize(600,900);
+    //this->setMaximumWidth(600);
 
 
     connect(addBtn, SIGNAL(clicked()), this, SLOT(addRow()));
@@ -117,28 +134,41 @@ void Window::inpChanged()
 
 void Window::parChanged()
 {
-    QString text;
-    text.setNum(paramSlider->value());
-    qreal value =   static_cast<qreal>(paramSlider->value())
-                  / static_cast<qreal>(100);
+//    QString text;
+//    text.setNum(paramSlider->value());
+//    qreal value =   static_cast<qreal>(paramSlider->value())
+//                  / static_cast<qreal>(100);
 
-    parLabel->setText("0."+text);
-    parLabel->update();
+//    parLabel->setText("0."+text);
+//    parLabel->update();
 
-    renderArea->setParameter(value);
-    renderArea->reuseAlg();
-    renderArea->update();
+//    renderArea->setParameter(value);
+//    renderArea->reuseAlg();
+//    renderArea->update();
 }
 
 void Window::addRow()
 {
     m_table->setRowCount(m_table->rowCount()+1);
+    int rowNum = m_table->rowCount();
+
+    for(int i=0; i< m_table->columnCount(); ++i){
+        m_table->setCellWidget(rowNum-1,i,new QSpinBox);
+    }
+
+
+
+
+
+    // добавить qlineedit with validator
+
 }
 
 void Window::removeRow()
 {
     if (m_table->rowCount() > 0)
         m_table->removeRow( m_table->currentRow() != -1 ? m_table->currentRow() : m_table->rowCount() - 1 );
+    //
 }
 
 void Window::calculate()
@@ -155,21 +185,32 @@ void Window::calculate()
 
     QList<QRect> rects;
     for(int row = 0; row < m_table->rowCount(); ++row)
-        for(int count = 0; count < m_table->item(row, 2)->text().toInt(); ++count ){
+      //  for(int count = 0; count < m_table->item(row, 2)->text().toInt(); ++count ){
+      for(int count = 0; count < qobject_cast<QSpinBox*>(m_table->cellWidget(row,2))->value(); ++count){
+           // if(m_table)
             QRect rect;
-            rect.setRect(0, 0, m_table->item(row, 1)->text().toInt(), m_table->item(row, 0)->text().toInt());
+//          rect.setRect(0, 0, m_table->item(row, 1)->text().toInt(), m_table->item(row, 0)->text().toInt());
+            rect.setRect(0, 0,qobject_cast<QSpinBox*>(m_table->cellWidget(row,1))->value(),qobject_cast<QSpinBox*>(m_table->cellWidget(row,0))->value());
             rects.push_back(rect);
         }
 
     renderArea->setSTRIPH(m_height);
     renderArea->setSTRIPW(m_width);
+    renderArea->setFixedSize(m_width+15,m_height+15);
     renderArea->fillArea(rects, m_height, m_width);
     renderArea->update();
-    // НОВОЕ
+
+    qvsb->setValue(qvsb->maximum());
+    scrollArea->update();
+// заполнение неуложившихся элементов
     for(QString str: renderArea->getUnList()) {
         m_cbbx->addItem(str);
     }
- // НОВОЕ
+
+
+
+
+
 
 }
 
