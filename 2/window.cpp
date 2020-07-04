@@ -41,6 +41,8 @@ Window::Window()
     QLabel *hLbl = new QLabel("Высота, см: ");
     QLabel *wLbl = new QLabel("Ширина, см: ");
 
+    QLabel *resLbl = new QLabel("Не уложились");
+
     m_hle = new QLineEdit;
     m_hle->setPlaceholderText("высота");
     m_hle->setFixedWidth(100);
@@ -78,6 +80,7 @@ Window::Window()
         m_table->setColumnWidth(i, this->width() / 7.51 );
 
     QPushButton *calcBtn = new QPushButton("Рассчитать");
+    QPushButton *clearBtn = new QPushButton("Очистить таблицу");
 
     m_cbbx = new QComboBox;
 
@@ -88,8 +91,10 @@ Window::Window()
     mainLayout->addLayout(whbLt, 4, 0, Qt::AlignLeft);
     mainLayout->addLayout(bLt, 5, 0, Qt::AlignCenter);
     mainLayout->addWidget(m_table, 3, 1, 3, 3 );
-    mainLayout->addWidget(calcBtn, 7, 1, 1, 2);
-    mainLayout->addWidget(m_cbbx, 7, 0, Qt::AlignCenter);
+    mainLayout->addWidget(resLbl,6,0,Qt::AlignCenter);
+    mainLayout->addWidget(calcBtn, 7, 1, 1, 1);
+    mainLayout->addWidget(clearBtn,7,2);
+    mainLayout->addWidget(m_cbbx, 7, 0, Qt::AlignJustify);
 
     mainLayout->sizeConstraint();
 
@@ -101,6 +106,7 @@ Window::Window()
     connect(addBtn, SIGNAL(clicked()), this, SLOT(addRow()));
     connect(remBtn, SIGNAL(clicked()), this, SLOT(removeRow()) );
     connect(calcBtn, SIGNAL(clicked()), this, SLOT(calculate()));
+    connect(clearBtn, SIGNAL(clicked()), this, SLOT(clearTable()));
 
 }
 
@@ -174,7 +180,8 @@ void Window::calculate()
                 QRect rect;
                 if(cellValue(row,0)>cellValue(row,1) && cellValue(row,0)<m_width) //
                     rect.setRect(0,0,cellValue(row,0),cellValue(row,1));
-                else rect.setRect(0, 0,cellValue(row,1),cellValue(row,0));
+                else
+                    rect.setRect(0, 0,cellValue(row,1),cellValue(row,0));
                 rects.push_back(rect);
         }
     }
@@ -192,5 +199,10 @@ void Window::calculate()
         m_cbbx->addItem(str);
     }
 
+}
+
+void Window::clearTable()
+{
+    m_table->setRowCount(0);
 }
 

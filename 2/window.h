@@ -29,6 +29,7 @@ private slots:
     void removeRow();
     int cellValue(int row, int col);
     void calculate();
+    void clearTable();
 
 private:
     RenderArea *renderArea;

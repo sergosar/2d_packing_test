@@ -32,10 +32,11 @@ public:
     void init(QList<QRect> rects, int H, int W);
     int getSize(void);
     void UseAlgorithm(void);
+    void setSTRIPH(int value);
+    void setSTRIPW(int value);
 
 
     QList<QString> unList();
-
     QList<QRect> rectangles;
     QList<QRect> unpacked;
 
@@ -59,9 +60,7 @@ public:
         int initW;
         int ceiling;
     };
-    int getSTRIPH() const;
-    void setSTRIPH(int value);
-    int getSTRIPW() const;
-    void setSTRIPW(int value);
+
+
 };
 #endif // PACKEGER_H

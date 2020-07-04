@@ -73,7 +73,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     for (int i = 0; i < packager.getSize(); i++) {
         if (packager.rectangles[i].y() < minY) minY = packager.rectangles[i].y();
         sumSpace += packager.rectangles[i].height() * packager.rectangles[i].width();
-        painter.setBrush(QBrush(QColor(255, 200, 100).lighter(120 - 8 * i),
+        painter.setBrush(QBrush(QColor(255, 200, 100).lighter(120),
                                 Qt::SolidPattern));
         painter.save();
         painter.drawRect(packager.rectangles[i].translated(QPoint(10,10)));

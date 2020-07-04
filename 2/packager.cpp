@@ -12,19 +12,11 @@
 //  Packager class implementation
 ///////////////////////////////////////////////////////////////////////////////
 
-int Packager::getSTRIPH() const
-{
-    return STRIPH;
-}
+
 
 void Packager::setSTRIPH(int value)
 {
     STRIPH = value;
-}
-
-int Packager::getSTRIPW() const
-{
-    return STRIPW;
 }
 
 void Packager::setSTRIPW(int value)
