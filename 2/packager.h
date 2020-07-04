@@ -27,7 +27,7 @@ private:
 
 public:
     Packager(void){}
-    const QList<QRect> pack(const QList<QRect> rects, int H, int W);
+    const QList<QRect> pack(QList<QRect> rects, int H, int W);
     void init(QString filename);
     void init(QList<QRect> rects, int H, int W);
     int getSize(void);

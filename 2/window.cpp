@@ -28,24 +28,10 @@ Window::Window()
     qvsb = scrollArea->verticalScrollBar();
 
 
-
-
-
-//    paramSlider = new QSlider(Qt::Vertical);
-//    paramSlider->setTickInterval(10);
-
-//    connect(paramSlider, SIGNAL(sliderMoved(int)),
-//            this, SLOT(parChanged()));
-
-//    parLabel = new QLabel(tr("0"));
-//    parLabel->setBuddy(paramSlider);
-
     QGridLayout *mainLayout = new QGridLayout(this);
     mainLayout->setColumnStretch(0, 1);
     mainLayout->setColumnStretch(3, 1);
     mainLayout->addWidget(scrollArea, 0, 0, 1, 3);
-//    mainLayout->addWidget(paramSlider, 0, 3);
-//    mainLayout->addWidget(parLabel, 1, 3);
 
     ///////////////////////////////////////
 
@@ -92,11 +78,8 @@ Window::Window()
         m_table->setColumnWidth(i, this->width() / 7.51 );
 
     QPushButton *calcBtn = new QPushButton("Рассчитать");
-     // НОВОЕ
-    m_cbbx = new QComboBox;
-     // НОВОЕ
-//overRslt->set
 
+    m_cbbx = new QComboBox;
 
 
     mainLayout->addWidget(sizeLbl, 2, 0, Qt::AlignLeft );
@@ -113,7 +96,6 @@ Window::Window()
     setLayout(mainLayout);
     setWindowTitle(tr("Тестовое задание по двумерной упаковке"));
     this->resize(600,900);
-    //this->setMaximumWidth(600);
 
 
     connect(addBtn, SIGNAL(clicked()), this, SLOT(addRow()));
@@ -154,22 +136,24 @@ void Window::addRow()
 
     for(int i=0; i< m_table->columnCount(); ++i){
         m_table->setCellWidget(rowNum-1,i,new QSpinBox);
+        qobject_cast<QSpinBox*>(m_table->cellWidget(rowNum-1, i))->setMaximum(999);
     }
-
-
-
-
-
-    // добавить qlineedit with validator
 
 }
 
 void Window::removeRow()
 {
     if (m_table->rowCount() > 0)
-        m_table->removeRow( m_table->currentRow() != -1 ? m_table->currentRow() : m_table->rowCount() - 1 );
-    //
+        m_table->removeRow( m_table->currentRow() != -1 ? m_table->currentRow() : m_table->rowCount() - 1 ); 
 }
+
+int Window::cellValue(int row, int col)
+{
+    return qobject_cast<QSpinBox*>(m_table->cellWidget(row,col))->value();
+}
+
+
+
 
 void Window::calculate()
 {
@@ -185,15 +169,15 @@ void Window::calculate()
 
     QList<QRect> rects;
     for(int row = 0; row < m_table->rowCount(); ++row)
-      //  for(int count = 0; count < m_table->item(row, 2)->text().toInt(); ++count ){
-      for(int count = 0; count < qobject_cast<QSpinBox*>(m_table->cellWidget(row,2))->value(); ++count){
-           // if(m_table)
-            QRect rect;
-//          rect.setRect(0, 0, m_table->item(row, 1)->text().toInt(), m_table->item(row, 0)->text().toInt());
-            rect.setRect(0, 0,qobject_cast<QSpinBox*>(m_table->cellWidget(row,1))->value(),qobject_cast<QSpinBox*>(m_table->cellWidget(row,0))->value());
-            rects.push_back(rect);
+        if(cellValue(row, 0)>0 && cellValue(row,1)>0 && cellValue(row,2)>0){ // empty table rows testing
+            for(int count = 0; count < cellValue(row,2); ++count){
+                QRect rect;
+                if(cellValue(row,0)>cellValue(row,1) && cellValue(row,0)<m_width) //
+                    rect.setRect(0,0,cellValue(row,0),cellValue(row,1));
+                else rect.setRect(0, 0,cellValue(row,1),cellValue(row,0));
+                rects.push_back(rect);
         }
-
+    }
     renderArea->setSTRIPH(m_height);
     renderArea->setSTRIPW(m_width);
     renderArea->setFixedSize(m_width+15,m_height+15);
@@ -202,15 +186,11 @@ void Window::calculate()
 
     qvsb->setValue(qvsb->maximum());
     scrollArea->update();
+
 // заполнение неуложившихся элементов
     for(QString str: renderArea->getUnList()) {
         m_cbbx->addItem(str);
     }
-
-
-
-
-
 
 }
 

@@ -27,6 +27,7 @@ private slots:
 
     void addRow();
     void removeRow();
+    int cellValue(int row, int col);
     void calculate();
 
 private:

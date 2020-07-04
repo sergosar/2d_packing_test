@@ -1,9 +1,11 @@
 #include "packager.h"
 #include "renderarea.h"
 
+
 #include <QFile>
 #include <QTextStream>
 #include <QtAlgorithms>
+//#include <algorithm>
 #include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,7 +79,7 @@ static bool decreasingComparsion(const QRect &r1, const QRect &r2)
     else return r1.width()>=r2.width();
 }
 
-// НОВОЕ зап
+
 QList<QString> Packager::unList()
 {
     qSort(unpacked.begin(), unpacked.end(), decreasingComparsion);
@@ -96,7 +98,7 @@ QList<QString> Packager::unList()
     uList.push_back(temp);
     return uList;
 }
-//
+
 
 const QRect Packager::Level::put(const QRect &rect, int H, int W,bool f, bool leftJustified )
 {
@@ -169,14 +171,36 @@ static bool decreasingWidthComparsion(const QRect &r1, const QRect &r2)
     return r1.width() >= r2.width();
 }
 
-const QList<QRect>Packager::pack(const QList<QRect> rects, int H, int W)
+const QList<QRect>Packager::pack( QList<QRect> rects, int H, int W)
 {
+    // deleting oversizing rects from list
+
+//    QList<QRect>::iterator i;
+//    for (i = rects.begin(); i != rects.end(); ++i){
+//        if(i->height()>H || i->width()>W){
+//            this->unpacked.push_back(*i);
+//            rects.erase(i);
+//        }
+//    }
+
+    for(auto rect: rects) {
+        if(rect.height()>H || rect.width()>W){
+            this->unpacked.push_back(rect);
+            rects.removeOne(rect);
+        }
+    }
+
+    QList<QRect> packed;
+    if(rects.size()==0) return packed ;
+
     QList<QRect> unpacked = rects;
     qSort(unpacked.begin(), unpacked.end(), decreasingComparsion);
 
+
+
     QList<Packager::Level> levels;
     Packager::Level level(0, unpacked[0].height(), 0, unpacked[0].width());
-    QList<QRect> packed;
+
 
     packed.push_back(level.put(unpacked[0],H,W));
     levels.push_back(level);
