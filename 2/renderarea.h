@@ -3,7 +3,6 @@
 
 #include <QBrush>
 #include <QPen>
-#include <QPixmap>
 #include <QWidget>
 
 #include "packager.h"
@@ -16,19 +15,11 @@ public:
 
     RenderArea(QWidget *parent = 0);
 
-    QSize minimumSizeHint() const;
-    QSize sizeHint() const;
- //   void setParameter(qreal param) {packager.SetParameter(param);}
-    void reuseAlg() {packager.UseAlgorithm();}
 
     void fillArea(QList<QRect> rects, int H, int W);
-
-    int getSTRIPH() const;
     void setSTRIPH(int value);
-
-    int getSTRIPW() const;
     void setSTRIPW(int value);
-    QList<QString> getUnList();             // !!!
+    QList<QString> getUnList();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -36,9 +27,8 @@ protected:
 private:
     int STRIPH;
     int STRIPW;
-    QPixmap pixmap;
+
     Packager packager;
- //   FCNR    floorCeil;
 };
 
 #endif // RENDERAREA_H

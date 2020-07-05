@@ -1,13 +1,9 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QLabel>
+
 #include <QLineEdit>
-#include <QTableWidget>
 #include <QPushButton>
 #include <QtGui>
-#include <QComboBox>
-#include <QScrollArea>
-#include <QScrollBar>
 #include <QSpinBox>
 
 
@@ -18,15 +14,12 @@
 Window::Window()
 {
     renderArea = new RenderArea;
-
-
     scrollArea = new QScrollArea;
     scrollArea->setWidget(renderArea);
 
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     qvsb = scrollArea->verticalScrollBar();
-
 
     QGridLayout *mainLayout = new QGridLayout(this);
     mainLayout->setColumnStretch(0, 1);
@@ -110,30 +103,6 @@ Window::Window()
 
 }
 
-void Window::algChanged()
-{
-//    renderArea->update();
-}
-
-void Window::inpChanged()
-{
-//    renderArea->update();
-}
-
-void Window::parChanged()
-{
-//    QString text;
-//    text.setNum(paramSlider->value());
-//    qreal value =   static_cast<qreal>(paramSlider->value())
-//                  / static_cast<qreal>(100);
-
-//    parLabel->setText("0."+text);
-//    parLabel->update();
-
-//    renderArea->setParameter(value);
-//    renderArea->reuseAlg();
-//    renderArea->update();
-}
 
 void Window::addRow()
 {

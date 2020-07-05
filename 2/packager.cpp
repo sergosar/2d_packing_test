@@ -60,7 +60,7 @@ void Packager::UseAlgorithm(void)
 {
     rectangles.clear();
     rectangles = this->pack(_rectangles,STRIPH, STRIPW);
-    //unpacked = _rectangles;
+
 
 }
 
@@ -135,7 +135,7 @@ bool Packager::Level::ceilingFeasible(const QRect &rect, const QList<QRect> exis
     return fit && !intersected;
 }
 
-bool Packager::Level::floorFeasible(const QRect &rect, int W)//проверка на укладку очередного прямоугольника на ширину
+bool Packager::Level::floorFeasible(const QRect &rect, int W)
 {
     return rect.width() <= (W - floor);
 }
@@ -149,31 +149,11 @@ int Packager::Level::getSpace(bool f, int W)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//  Algorithm class implementation
-///////////////////////////////////////////////////////////////////////////////
 
-
-static bool decreasingHeightComparsion(const QRect &r1, const QRect &r2)
-{
-    return r1.height() >= r2.height();
-}
-static bool decreasingWidthComparsion(const QRect &r1, const QRect &r2)
-{
-    return r1.width() >= r2.width();
-}
 
 const QList<QRect>Packager::pack( QList<QRect> rects, int H, int W)
 {
     // deleting oversizing rects from list
-
-//    QList<QRect>::iterator i;
-//    for (i = rects.begin(); i != rects.end(); ++i){
-//        if(i->height()>H || i->width()>W){
-//            this->unpacked.push_back(*i);
-//            rects.erase(i);
-//        }
-//    }
 
     for(auto rect: rects) {
         if(rect.height()>H || rect.width()>W){
@@ -188,11 +168,8 @@ const QList<QRect>Packager::pack( QList<QRect> rects, int H, int W)
     QList<QRect> unpacked = rects;
     qSort(unpacked.begin(), unpacked.end(), decreasingComparsion);
 
-
-
     QList<Packager::Level> levels;
     Packager::Level level(0, unpacked[0].height(), 0, unpacked[0].width());
-
 
     packed.push_back(level.put(unpacked[0],H,W));
     levels.push_back(level);
@@ -223,14 +200,14 @@ const QList<QRect>Packager::pack( QList<QRect> rects, int H, int W)
             }
             if (found > -1) { // ceiling-pack on existing level
                 packed.push_back(levels[found].put(unpacked[i], H,W, false));
-            } else  if (levels.last().bottom + levels.last().height+unpacked[i].height()<=H){ // a new level, условие на переполнение высоты
+            } else  if (levels.last().bottom + levels.last().height+unpacked[i].height()<=H){ // a new level
                 Packager::Level newLevel(levels.last().bottom + levels.last().height,
                                          unpacked[i].height(), 0, unpacked[i].width());
                 packed.push_back(newLevel.put(unpacked[i],H,W));
                 levels.push_back(newLevel);
             } else {
                 this->unpacked.push_back(unpacked[i]);
-            }          //заполнение unpucked
+            }          //unpucked
         }
     }
 
