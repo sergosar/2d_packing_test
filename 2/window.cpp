@@ -5,7 +5,11 @@
 #include <QPushButton>
 #include <QtGui>
 #include <QSpinBox>
-
+#include <QLabel>
+#include <QScrollArea>
+#include <QTableWidget>
+#include <QComboBox>
+#include <QScrollBar>
 
 #include "renderarea.h"
 #include "packager.h"
@@ -66,7 +70,7 @@ Window::Window()
 
 
     QStringList colNames;
-    colNames << "Высота" << "Ширина" << "Количество"; //, не работает , почему!!!                           !!!
+    colNames << "Высота" << "Ширина" << "Количество";
     m_table->setHorizontalHeaderLabels(colNames);
 
     for (int i = 0; i < m_table->columnCount(); ++i)
@@ -103,7 +107,6 @@ Window::Window()
 
 }
 
-
 void Window::addRow()
 {
     m_table->setRowCount(m_table->rowCount()+1);
@@ -126,9 +129,6 @@ int Window::cellValue(int row, int col)
 {
     return qobject_cast<QSpinBox*>(m_table->cellWidget(row,col))->value();
 }
-
-
-
 
 void Window::calculate()
 {
@@ -167,7 +167,6 @@ void Window::calculate()
     for(QString str: renderArea->getUnList()) {
         m_cbbx->addItem(str);
     }
-
 }
 
 void Window::clearTable()

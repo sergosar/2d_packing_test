@@ -20,10 +20,9 @@ QList<QString> RenderArea::getUnList()
 }
 
 RenderArea::RenderArea(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), STRIPH(-1), STRIPW(-1),packager()
 {
-    STRIPH = -1;
-    STRIPW = -1;
+
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
 

@@ -4,7 +4,6 @@
 #include <QBrush>
 #include <QPen>
 #include <QWidget>
-
 #include "packager.h"
 
 class RenderArea : public QWidget
@@ -13,8 +12,7 @@ class RenderArea : public QWidget
 
 public:
 
-    RenderArea(QWidget *parent = 0);
-
+    RenderArea(QWidget *parent = nullptr);
 
     void fillArea(QList<QRect> rects, int H, int W);
     void setSTRIPH(int value);

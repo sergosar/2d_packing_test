@@ -1,15 +1,16 @@
 #ifndef WINDOW_H
 #define WINDOW_H
-#include "renderarea.h"
 
-#include <QComboBox>
-#include <QScrollArea>
 #include <QWidget>
-#include <QScrollBar>
-#include <QTableWidget>
-#include <QLabel>
 
-
+class QLabel;
+class QGridLayout;
+class RenderArea;
+class QTableWidget;
+class QLineEdit;
+class QComboBox;
+class QScrollArea;
+class QScrollBar;
 
 class Window : public QWidget
 {
@@ -29,7 +30,6 @@ private slots:
 private:
     RenderArea *renderArea;
     QLabel *parLabel;
-    QSlider *paramSlider;
     QTableWidget *m_table;
     QLineEdit *m_wle;
     QLineEdit *m_hle;
