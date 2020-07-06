@@ -7,6 +7,7 @@
 #include <QtAlgorithms>
 #include <cmath>
 
+#include <algorithm>
 
 
 void Packager::setSTRIPH(int value)
@@ -59,17 +60,19 @@ void Packager::UseAlgorithm(void)
 
 }
 
-static bool decreasingComparsion(const QRect &r1, const QRect &r2)
+bool decreasingComparsion(const QRect r1, const QRect r2)
 {
     if(r1.height()!=r2.height())
         return r1.height() > r2.height();
     else return r1.width()>=r2.width();
 }
 
-
 QList<QString> Packager::unList()
 {
-    qSort(unpacked.begin(), unpacked.end(), decreasingComparsion);
+    if (unpacked.empty())
+        return QList<QString>();
+
+    qSort( unpacked.begin(), unpacked.end(), decreasingComparsion);
     QList<QString> uList;
     QString temp ="";
     for(QRect rect: unpacked){
@@ -146,7 +149,7 @@ int Packager::Level::getSpace(bool f, int W)
 
 
 
-const QList<QRect>Packager::pack( QList<QRect> rects, int H, int W)
+QList<QRect>Packager::pack( QList<QRect> rects, int H, int W)
 {
     // deleting oversizing rects from list
 
@@ -160,7 +163,11 @@ const QList<QRect>Packager::pack( QList<QRect> rects, int H, int W)
     QList<QRect> packed;
     if(rects.size()==0) return packed ;
 
+
     QList<QRect> unpacked = rects;
+    if (unpacked.empty())
+        return QList<QRect>();
+
     qSort(unpacked.begin(), unpacked.end(), decreasingComparsion);
 
     QList<Packager::Level> levels;

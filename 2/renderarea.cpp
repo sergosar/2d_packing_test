@@ -53,7 +53,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     int minY = STRIPH;
     for (int i = 0; i < packager.getSize(); i++) {
         if (packager.rectangles[i].y() < minY) minY = packager.rectangles[i].y();
-        painter.setBrush(QBrush(QColor(255, 200, 100).lighter(120),
+        painter.setBrush(QBrush(QColor(255, 100, 100).lighter(120-(8*i)%120),
                                 Qt::SolidPattern));
         painter.save();
         painter.drawRect(packager.rectangles[i].translated(QPoint(10,10)));

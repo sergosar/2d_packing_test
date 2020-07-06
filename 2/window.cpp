@@ -10,6 +10,11 @@
 #include <QTableWidget>
 #include <QComboBox>
 #include <QScrollBar>
+#include <QHeaderView>
+#include <QFileDialog>
+#include <QDir>
+
+
 
 #include "renderarea.h"
 #include "packager.h"
@@ -26,19 +31,17 @@ Window::Window()
     qvsb = scrollArea->verticalScrollBar();
 
     QGridLayout *mainLayout = new QGridLayout(this);
-    mainLayout->setColumnStretch(0, 1);
-    mainLayout->setColumnStretch(3, 1);
-    mainLayout->addWidget(scrollArea, 0, 0, 1, 3);
+    mainLayout->addWidget(scrollArea, 0, 0, 1, 4);
 
     ///////////////////////////////////////
 
-    QLabel *sizeLbl = new QLabel("Размер полотна");
-    QLabel *tableLbl = new QLabel("Перечень изделий");
+    QLabel *sizeLbl = new QLabel("<b>Размер полотна</b>");
+    QLabel *tableLbl = new QLabel("<b>Перечень изделий</b>");
 
     QLabel *hLbl = new QLabel("Высота, см: ");
     QLabel *wLbl = new QLabel("Ширина, см: ");
 
-    QLabel *resLbl = new QLabel("Не уложились");
+    QLabel *resLbl = new QLabel("Нераскроенные изделия:");
 
     m_hle = new QLineEdit;
     m_hle->setPlaceholderText("высота");
@@ -73,37 +76,40 @@ Window::Window()
     colNames << "Высота" << "Ширина" << "Количество";
     m_table->setHorizontalHeaderLabels(colNames);
 
-    for (int i = 0; i < m_table->columnCount(); ++i)
-        m_table->setColumnWidth(i, this->width() / 7.51 );
 
     QPushButton *calcBtn = new QPushButton("Рассчитать");
     QPushButton *clearBtn = new QPushButton("Очистить таблицу");
+    QPushButton *saveBtn = new QPushButton("Сохранить раскорой");
+
 
     m_cbbx = new QComboBox;
-
 
     mainLayout->addWidget(sizeLbl, 2, 0, Qt::AlignLeft );
     mainLayout->addWidget(tableLbl, 2, 2, Qt::AlignRight);
     mainLayout->addLayout(hhbLt, 3, 0, Qt::AlignLeft);
     mainLayout->addLayout(whbLt, 4, 0, Qt::AlignLeft);
     mainLayout->addLayout(bLt, 5, 0, Qt::AlignCenter);
-    mainLayout->addWidget(m_table, 3, 1, 3, 3 );
-    mainLayout->addWidget(resLbl,6,0,Qt::AlignCenter);
+    mainLayout->addWidget(saveBtn, 6,0);
+    mainLayout->addWidget(m_table, 3, 1, 3, 2);
+    mainLayout->setColumnStretch(2, 2);
+    mainLayout->setColumnStretch(1, 2);
+    mainLayout->addWidget(resLbl, 7, 0, Qt::AlignCenter);
     mainLayout->addWidget(calcBtn, 7, 1, 1, 1);
-    mainLayout->addWidget(clearBtn,7,2);
-    mainLayout->addWidget(m_cbbx, 7, 0, Qt::AlignJustify);
+    mainLayout->addWidget(clearBtn, 7, 2, 1, 1);
+    mainLayout->addWidget(m_cbbx, 8, 0, 2, 1);
 
-    mainLayout->sizeConstraint();
+
 
     setLayout(mainLayout);
-    setWindowTitle(tr("Тестовое задание по двумерной упаковке"));
+    setWindowTitle("Тестовое задание по двумерной упаковке");
     this->resize(600,900);
-
+    m_table->horizontalHeader()->setStretchLastSection(true);
 
     connect(addBtn, SIGNAL(clicked()), this, SLOT(addRow()));
     connect(remBtn, SIGNAL(clicked()), this, SLOT(removeRow()) );
     connect(calcBtn, SIGNAL(clicked()), this, SLOT(calculate()));
     connect(clearBtn, SIGNAL(clicked()), this, SLOT(clearTable()));
+    connect(saveBtn, SIGNAL(clicked()),this,SLOT(saveRslt()));
 
 }
 
@@ -147,8 +153,9 @@ void Window::calculate()
         if(cellValue(row, 0)>0 && cellValue(row,1)>0 && cellValue(row,2)>0){ // empty table rows testing
             for(int count = 0; count < cellValue(row,2); ++count){
                 QRect rect;
-                if(cellValue(row,0)>cellValue(row,1) && cellValue(row,0)<m_width) //
+                if((cellValue(row,0)>cellValue(row,1) && cellValue(row,0)<=m_width) || cellValue(row,1)>m_width ) //
                     rect.setRect(0,0,cellValue(row,0),cellValue(row,1));
+
                 else
                     rect.setRect(0, 0,cellValue(row,1),cellValue(row,0));
                 rects.push_back(rect);
@@ -172,5 +179,15 @@ void Window::calculate()
 void Window::clearTable()
 {
     m_table->setRowCount(0);
+}
+
+void Window::saveRslt()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::homePath(), tr("Images (*.png)" ));
+    QFile file(fileName);
+    if(file.open(QIODevice::WriteOnly)){
+        QPixmap image= renderArea->grab();
+        image.save(&file, "PNG");
+    };
 }
 

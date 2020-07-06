@@ -23,13 +23,13 @@ private slots:
 
     void addRow();
     void removeRow();
-    int cellValue(int row, int col);
+
     void calculate();
     void clearTable();
+    void saveRslt();
 
 private:
     RenderArea *renderArea;
-    QLabel *parLabel;
     QTableWidget *m_table;
     QLineEdit *m_wle;
     QLineEdit *m_hle;
@@ -37,7 +37,7 @@ private:
     QScrollArea *scrollArea;
     QScrollBar *qvsb;
 
-
+    int cellValue(int row, int col);
     int m_width;
     int m_height;
 
