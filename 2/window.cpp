@@ -17,9 +17,9 @@
 
 
 #include "renderarea.h"
-#include "packager.h"
+#include "packager2.h"
 #include "window.h"
-
+using namespace std;
 Window::Window()
 {
     renderArea = new RenderArea;
@@ -81,7 +81,6 @@ Window::Window()
     QPushButton *clearBtn = new QPushButton("Очистить таблицу");
     QPushButton *saveBtn = new QPushButton("Сохранить раскорой");
 
-
     m_cbbx = new QComboBox;
 
     mainLayout->addWidget(sizeLbl, 2, 0, Qt::AlignLeft );
@@ -131,11 +130,18 @@ void Window::removeRow()
         m_table->removeRow( m_table->currentRow() != -1 ? m_table->currentRow() : m_table->rowCount() - 1 ); 
 }
 
-int Window::cellValue(int row, int col)
+int Window::cV(int row, int col) // cellValue of tableWшdget
 {
     return qobject_cast<QSpinBox*>(m_table->cellWidget(row,col))->value();
 }
 
+void Window::pushRects(QList<QRect> &rects,int w,int h,int n){
+    for(int i = 0; i<n; i++){
+        QRect rect;
+        rect.setRect(0, 0,w,h);
+        rects.push_back(rect);
+    }
+}
 void Window::calculate()
 {
     m_cbbx->clear();
@@ -150,30 +156,51 @@ void Window::calculate()
 
     QList<QRect> rects;
     for(int row = 0; row < m_table->rowCount(); ++row)
-        if(cellValue(row, 0)>0 && cellValue(row,1)>0 && cellValue(row,2)>0){ // empty table rows testing
-            for(int count = 0; count < cellValue(row,2); ++count){
-                QRect rect;
-                if((cellValue(row,0)>cellValue(row,1) && cellValue(row,0)<=m_width) || cellValue(row,1)>m_width ) //
-                    rect.setRect(0,0,cellValue(row,0),cellValue(row,1));
+        if(cV(row, 0)>0 && cV(row,1)>0 && cV(row,2)>0){ // empty table rows testing
+            int h = cV(row,0);
+            int w= cV(row,1);
+            int k = cV(row,2);
+            bool orient=(m_width/h)*h<(m_width/w)*w;
 
-                else
-                    rect.setRect(0, 0,cellValue(row,1),cellValue(row,0));
-                rects.push_back(rect);
-        }
+            if(k<m_width/max(h,w)){ //заполнение списка
+                pushRects(rects, max(h,w),min(h,w),k);
+
+            } else if(max(h,w)>m_width) {  //ширина больше, поворот неформата
+                pushRects(rects, min(h,w),max(h,w),k);
+
+            } else {
+                if(orient) {
+                    int t= m_width/w;
+                    while(k>=t){
+                        pushRects(rects,w,h,t);
+                        k-=t;
+                    }
+                    pushRects(rects,max(h,w),min(h,w),k%t);
+                } else{
+                    int t = m_width/h;
+                    while(k>=t){
+                        pushRects(rects,h,w,t);
+                        k-=t;
+                    }
+                    pushRects(rects,max(h,w),min(h,w),k%t);
+                }
+            }
     }
     renderArea->setSTRIPH(m_height);
     renderArea->setSTRIPW(m_width);
     renderArea->setFixedSize(m_width+15,m_height+15);
     renderArea->fillArea(rects, m_height, m_width);
+
+    // заполнение неуложившихся элементов
+    for(QString str: renderArea->getUnList()) {
+        m_cbbx->addItem(str);
+    }
     renderArea->update();
 
     qvsb->setValue(qvsb->maximum());
     scrollArea->update();
 
-// заполнение неуложившихся элементов
-    for(QString str: renderArea->getUnList()) {
-        m_cbbx->addItem(str);
-    }
+
 }
 
 void Window::clearTable()

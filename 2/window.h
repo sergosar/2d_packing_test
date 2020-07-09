@@ -37,10 +37,11 @@ private:
     QScrollArea *scrollArea;
     QScrollBar *qvsb;
 
-    int cellValue(int row, int col);
+    int cV(int row, int col);
     int m_width;
     int m_height;
 
+    void pushRects(QList<QRect> &rects, int w, int h, int n);
 };
 
 #endif // WINDOW_H

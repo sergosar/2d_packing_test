@@ -17,12 +17,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    packager.cpp \
+    packager2.cpp \
     renderarea.cpp \
     window.cpp
 
 HEADERS += \
-    packager.h \
+    packager2.h \
     renderarea.h \
     window.h
 

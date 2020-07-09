@@ -4,7 +4,7 @@
 #include <QBrush>
 #include <QPen>
 #include <QWidget>
-#include "packager.h"
+#include "packager2.h"
 
 class RenderArea : public QWidget
 {
@@ -26,7 +26,7 @@ private:
     int STRIPH;
     int STRIPW;
 
-    Packager packager;
+    Packager2 packager2;
 };
 
 #endif // RENDERAREA_H

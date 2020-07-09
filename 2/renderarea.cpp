@@ -1,7 +1,7 @@
 #include <QtGui>
 
 #include "renderarea.h"
-#include "packager.h"
+#include "packager2.h"
 
 
 void RenderArea::setSTRIPH(int value)
@@ -16,11 +16,11 @@ void RenderArea::setSTRIPW(int value)
 
 QList<QString> RenderArea::getUnList()
 {
-    return packager.unList();
+    return packager2.unList();
 }
 
 RenderArea::RenderArea(QWidget *parent)
-    : QWidget(parent), STRIPH(-1), STRIPW(-1),packager()
+    : QWidget(parent), STRIPH(-1), STRIPW(-1),packager2()
 {
 
     setBackgroundRole(QPalette::Base);
@@ -34,8 +34,8 @@ RenderArea::RenderArea(QWidget *parent)
 
 void RenderArea::fillArea(QList<QRect> rects, int H, int W)
 {
-    packager.init(rects, H , W);
-    packager.UseAlgorithm();
+    packager2.init(rects, H , W);
+    packager2.UseAlgorithm();
 }
 
 void RenderArea::paintEvent(QPaintEvent * /* event */)
@@ -51,12 +51,12 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     painter.setPen(QPen(Qt::black));
 
     int minY = STRIPH;
-    for (int i = 0; i < packager.getSize(); i++) {
-        if (packager.rectangles[i].y() < minY) minY = packager.rectangles[i].y();
-        painter.setBrush(QBrush(QColor(255, 100, 100).lighter(120-(8*i)%120),
+    for (int i = 0; i < packager2.getSize(); i++) {
+        if (packager2.rectangles[i].y() < minY) minY = packager2.rectangles[i].y();
+        painter.setBrush(QBrush(QColor(255,100, 1).lighter(120-(8*i)%120),
                                 Qt::SolidPattern));
         painter.save();
-        painter.drawRect(packager.rectangles[i].translated(QPoint(10,10)));
+        painter.drawRect(packager2.rectangles[i].translated(QPoint(10,10)));
         painter.restore();
     }
 
