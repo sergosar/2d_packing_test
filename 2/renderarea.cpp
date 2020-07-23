@@ -32,7 +32,7 @@ RenderArea::RenderArea(QWidget *parent)
 
 
 
-void RenderArea::fillArea(QList<QRect> rects, int H, int W)
+void RenderArea::fillArea(QList<QSize> rects, int H, int W)
 {
     packager2.init(rects, H , W);
     packager2.UseAlgorithm();

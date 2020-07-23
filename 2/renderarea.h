@@ -14,7 +14,7 @@ public:
 
     RenderArea(QWidget *parent = nullptr);
 
-    void fillArea(QList<QRect> rects, int H, int W);
+    void fillArea(QList<QSize> rects, int H, int W);
     void setSTRIPH(int value);
     void setSTRIPW(int value);
     QList<QString> getUnList();

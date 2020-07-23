@@ -154,37 +154,15 @@ void Window::calculate()
     if (m_table->rowCount() == 0)
         return;
 
-    QList<QRect> rects;
+   // QList<QRect> rects;
+    QList<QSize> rects;
     for(int row = 0; row < m_table->rowCount(); ++row)
-        if(cV(row, 0)>0 && cV(row,1)>0 && cV(row,2)>0){ // empty table rows testing
-            int h = cV(row,0);
-            int w= cV(row,1);
-            int k = cV(row,2);
-            bool orient=(m_width/h)*h<(m_width/w)*w;
-
-            if(k<m_width/max(h,w)){ //заполнение списка
-                pushRects(rects, max(h,w),min(h,w),k);
-
-            } else if(max(h,w)>m_width) {  //ширина больше, поворот неформата
-                pushRects(rects, min(h,w),max(h,w),k);
-
-            } else {
-                if(orient) {
-                    int t= m_width/w;
-                    while(k>=t){
-                        pushRects(rects,w,h,t);
-                        k-=t;
-                    }
-                    pushRects(rects,max(h,w),min(h,w),k%t);
-                } else{
-                    int t = m_width/h;
-                    while(k>=t){
-                        pushRects(rects,h,w,t);
-                        k-=t;
-                    }
-                    pushRects(rects,max(h,w),min(h,w),k%t);
-                }
-            }
+        if(cV(row, 0)>0 && cV(row,1)>0 && cV(row,2)>0){// empty table rows testing
+            int w =cV(row,0);
+            int h = cV(row,1);
+            for(int count = 0; count < cV(row,2); ++count){
+            rects.push_back(QSize(min(w,h), max(w,h)));
+    }
     }
     renderArea->setSTRIPH(m_height);
     renderArea->setSTRIPW(m_width);
@@ -198,7 +176,7 @@ void Window::calculate()
     renderArea->update();
 
     qvsb->setValue(qvsb->maximum());
-    scrollArea->update();
+ //   scrollArea->update();
 
 
 }
