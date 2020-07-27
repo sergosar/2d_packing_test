@@ -48,6 +48,9 @@ short int edgeDegree;
 
     QPoint getIntersCoords(QRect &r1, QRect &r2);
     bool edgeOverlap(QRect &r1, QRect &r2);
+    void coaSort(QList<CoAction> & actions);
+
+
 
 
 public:

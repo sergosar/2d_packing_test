@@ -59,13 +59,16 @@ void Packager2::UseAlgorithm(void)
     rectangles.push_back(QRect(0,-5, STRIPW,5));
     rectangles.push_back(QRect(STRIPW,-5,5,STRIPH+10));
     rectangles.push_back(QRect(0,STRIPH,STRIPW,5));
+
+
+
     QList<QPoint> coaP;
     QList<CoaPoint> coaPointsList;
         // think about ..
     for(int i = 0; i<rectangles.size()-1; i++){
         for(int j=i+1; j<rectangles.size(); j++){
             QPoint coa = getIntersCoords(rectangles[i], rectangles[j]);
-            if(coa.x()!=-1 && !coaP.contains(coa))   //нужно ли contains???
+            if(coa.x()!=-1 )   //нужно ли contains???
             {
                 coaP.push_back(coa);
                 coaPointsList.push_back(CoaPoint(rectangles[i],rectangles[j], coa));
@@ -76,11 +79,6 @@ void Packager2::UseAlgorithm(void)
     //Basic programm
 
     while(true) {
-           //step first
-           //
-
-
-
 
         QList<CoAction> actions;
         for(auto coaPoint: coaPointsList)
@@ -96,9 +94,9 @@ void Packager2::UseAlgorithm(void)
             }
         }
         //No feasible COA? break
-        if(actions.size()==0) break;
+        if(actions.size()==0) break;//поменять на do while??//
         //calculation  cavingDegree, cornerDegree, edgeDegree;
-        //cavingDegree
+
 
         for(auto& action: actions) {
             action.cavingDegree=calcCavingDegree(action);
@@ -108,37 +106,7 @@ void Packager2::UseAlgorithm(void)
         }
 
         //Step 2 sort by
-        auto coaSort = [](const CoAction &a1, const CoAction& a2)
-        {
-
-            if(a1.cavingDegree!=a2.cavingDegree)
-                return a1.cavingDegree>a2.cavingDegree;
-//           else if(a1.testRect.y()>a2.testRect.y()&&
-//                    a1.testRect.height()*a1.testRect.width()==a2.testRect.height()*
-//                    a2.testRect.width())
-//                return a1.testRect.bottom()>a2.testRect.bottom();
-            else if(a1.cornerDegree!=a2.cornerDegree)
-                return a1.cornerDegree>a2.cornerDegree;
-            else if(a1.edgeDegree!=a2.edgeDegree)
-                return a1.edgeDegree>a2.edgeDegree;
-            else if(a1.testRect.bottom()!=a2.testRect.bottom())
-                return a1.testRect.bottom()<a2.testRect.bottom();
-            else if(a1.cPoint.point.y()!=a2.cPoint.point.y())
-                return a1.cPoint.point.y()<a2.cPoint.point.y();
-            else if(a1.cPoint.point.x()!=a2.cPoint.point.x())
-                return a1.cPoint.point.x()<a2.cPoint.point.x();
-            else if (a1.testRect.width()*a1.testRect.height()!=a2.testRect.width()*a2.testRect.height())
-                return a1.testRect.width()*a1.testRect.height()>a2.testRect.width()*a2.testRect.height();
-            else return a1.testRect.width()>a2.testRect.width();
-
-        };
-        sort(actions.begin(),actions.end(),coaSort);
-//        if(actions.size()>1)
-//        while(actions[0].testRect.bottom()>actions[1].testRect.bottom()&&
-//                actions[0].testRect.width()*actions[0].testRect.height()==
-//                actions[1].testRect.width()*actions[1].testRect.height())
-//            actions.removeFirst();
-
+        coaSort(actions);
 
         rectangles.push_back(actions[0].testRect);
         unpacked.removeOne(QSize((min(actions[0].testRect.width(),actions[0].testRect.height())),
@@ -154,19 +122,13 @@ void Packager2::UseAlgorithm(void)
         for(int i = 0; i<rectangles.size()-1; i++){
 
             QPoint coa = getIntersCoords(rectangles[i], rectangles.last());
-            if(coa.x()!=-1 && !coaP.contains(coa))   //нужно ли contains???
+            if(coa.x()!=-1)
             {
                 coaP.push_back(coa);
                 coaPointsList.push_back(CoaPoint(rectangles[i],rectangles.last(), coa));
             }
         }
-
-
-
-
-
 //        qDebug()<<coaPointsList.size();
-
     }
 
 }
@@ -236,6 +198,38 @@ bool Packager2::edgeOverlap(QRect& r1,QRect& r2) {
             (max(r1.bottom(), r2.bottom())-min(r1.top(),r2.top())+1)< (r1.height()+r2.height()))
         return true;
     return false;
+}
+
+
+
+void Packager2::coaSort(QList<Packager2::CoAction> &actions)
+{
+    auto cSort = [](const CoAction &a1, const CoAction& a2)
+    {
+
+        if(a1.cavingDegree!=a2.cavingDegree)
+            return a1.cavingDegree>a2.cavingDegree;
+    //           else if(a1.testRect.y()>a2.testRect.y()&&
+    //                    a1.testRect.height()*a1.testRect.width()==a2.testRect.height()*
+    //                    a2.testRect.width())
+    //                return a1.testRect.bottom()>a2.testRect.bottom();
+        else if(a1.cornerDegree!=a2.cornerDegree)
+            return a1.cornerDegree>a2.cornerDegree;
+        else if(a1.edgeDegree!=a2.edgeDegree)
+            return a1.edgeDegree>a2.edgeDegree;
+        else if(a1.testRect.bottom()!=a2.testRect.bottom())
+            return a1.testRect.bottom()<a2.testRect.bottom();
+        else if(a1.cPoint.point.y()!=a2.cPoint.point.y())
+            return a1.cPoint.point.y()<a2.cPoint.point.y();
+        else if(a1.cPoint.point.x()!=a2.cPoint.point.x())
+            return a1.cPoint.point.x()<a2.cPoint.point.x();
+        else if (a1.testRect.width()*a1.testRect.height()!=a2.testRect.width()*a2.testRect.height())
+            return a1.testRect.width()*a1.testRect.height()>a2.testRect.width()*a2.testRect.height();
+        else return a1.testRect.width()>a2.testRect.width();
+
+    };
+    sort(actions.begin(),actions.end(),cSort);
+
 }
 
 bool Packager2::Intersected(QRect &r){
