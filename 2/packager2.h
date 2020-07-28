@@ -21,7 +21,7 @@ private:
     class CoaPoint
     {
     public:
-        CoaPoint(QRect& r1, QRect r2, QPoint p):
+        CoaPoint(QRect& r1, QRect& r2, QPoint p):
             r1(r1),
             r2(r2),
             point(p){}
@@ -49,6 +49,7 @@ short int edgeDegree;
     QPoint getIntersCoords(QRect &r1, QRect &r2);
     bool edgeOverlap(QRect &r1, QRect &r2);
     void coaSort(QList<CoAction> & actions);
+    QList<QRect> basicProgramm(QList<QRect> rectangles, QList<QSize> unpacked, QList<CoaPoint> coaPointsList);
 
 
 
@@ -72,8 +73,8 @@ public:
 
 
 
-    bool Intersected(QRect &r);
-    bool feasibleCOA(QRect &r, CoaPoint &cPoint);
+    bool Intersected(QRect &r, QList<QRect>& rectangles);
+    bool feasibleCOA(QRect &r, CoaPoint &cPoint, QList<QRect> & rectangles);
     double calcCavingDegree(CoAction &action);
     double dist(QRect &r1, QRect &r2);
 };

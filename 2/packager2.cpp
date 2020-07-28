@@ -61,89 +61,22 @@ void Packager2::UseAlgorithm(void)
     rectangles.push_back(QRect(0,STRIPH,STRIPW,5));
 
 
-
     QList<QPoint> coaP;
     QList<CoaPoint> coaPointsList;
-        // think about ..
-    for(int i = 0; i<rectangles.size()-1; i++){
-        for(int j=i+1; j<rectangles.size(); j++){
-            QPoint coa = getIntersCoords(rectangles[i], rectangles[j]);
-            if(coa.x()!=-1 )   //нужно ли contains???
-            {
-                coaP.push_back(coa);
-                coaPointsList.push_back(CoaPoint(rectangles[i],rectangles[j], coa));
-            }
-        }
-    }
+
+    coaPointsList.push_back(CoaPoint(rectangles[0],rectangles[1], QPoint(0,0)));
 
     //Basic programm
 
-    while(true) {
-
-        QList<CoAction> actions;
-        for(auto coaPoint: coaPointsList)
-        {
-            for(auto& size : unpacked)
-            {
-                QRect r1= QRect(coaPoint.point.x(),coaPoint.point.y(), size.width(),size.height());
-                QRect r2= QRect(coaPoint.point.x(),coaPoint.point.y(), size.height(),size.width());
-                if(feasibleCOA(r1,coaPoint))
-                    actions.push_back(CoAction(coaPoint, r1));
-                if(feasibleCOA(r2,coaPoint))
-                    actions.push_back(CoAction(coaPoint, r2));
-            }
-        }
-        //No feasible COA? break
-        if(actions.size()==0) break;//поменять на do while??//
-        //calculation  cavingDegree, cornerDegree, edgeDegree;
+    rectangles=basicProgramm(rectangles, unpacked,coaPointsList);
 
 
-        for(auto& action: actions) {
-            action.cavingDegree=calcCavingDegree(action);
-            vector<int> edges = cornerEdgeDegree(action.testRect, rectangles);
-            action.cornerDegree=cornerDegree(edges);
-            action.edgeDegree = edgeDegree(edges);
-        }
-
-        //Step 2 sort by
-        coaSort(actions);
-
-        rectangles.push_back(actions[0].testRect);
-        unpacked.removeOne(QSize((min(actions[0].testRect.width(),actions[0].testRect.height())),
-                max(actions[0].testRect.width(),actions[0].testRect.height())));
-
-        QPoint removePoint= rectangles.last().topLeft();
-        QMutableListIterator<CoaPoint> it(coaPointsList);
-
-        while(it.hasNext()){
-            if(it.next().point==removePoint) it.remove();
-        }
-
-        for(int i = 0; i<rectangles.size()-1; i++){
-
-            QPoint coa = getIntersCoords(rectangles[i], rectangles.last());
-            if(coa.x()!=-1)
-            {
-                coaP.push_back(coa);
-                coaPointsList.push_back(CoaPoint(rectangles[i],rectangles.last(), coa));
-            }
-        }
-//        qDebug()<<coaPointsList.size();
-    }
 
 }
 
 
-
-//    pack(_rectangles,STRIPH, STRIPW);
-
-//    for(auto rect : rectangles){
-//        QRect rectd;
-//        rectd.setRect(0,0,rect.width(),rect.height());
-//        unpacked.removeOne(rectd);
-//    }
-
-
+// ---------------------------------------
+//-----------------------------------------
 
 
 bool decreasingComparsion(const QRect r1, const QRect r2)
@@ -232,20 +165,75 @@ void Packager2::coaSort(QList<Packager2::CoAction> &actions)
 
 }
 
-bool Packager2::Intersected(QRect &r){
+QList<QRect> Packager2::basicProgramm(QList<QRect> rectangles, QList<QSize> unpacked, QList<Packager2::CoaPoint> coaPointsList)
+{
+    while(true) {
+
+        QList<CoAction> actions;
+        for(auto coaPoint: coaPointsList)
+        {
+            for(auto& size : unpacked)
+            {
+                QRect r1= QRect(coaPoint.point.x(),coaPoint.point.y(), size.width(),size.height());
+                QRect r2= QRect(coaPoint.point.x(),coaPoint.point.y(), size.height(),size.width());
+                if(feasibleCOA(r1,coaPoint,rectangles))
+                    actions.push_back(CoAction(coaPoint, r1));
+                if(feasibleCOA(r2,coaPoint, rectangles))
+                    actions.push_back(CoAction(coaPoint, r2));
+            }
+        }
+        //No feasible COA? break
+        if(actions.size()==0) break;//поменять на do while??//
+        //calculation  cavingDegree, cornerDegree, edgeDegree;
+
+
+        for(auto& action: actions) {
+            action.cavingDegree=calcCavingDegree(action);
+            vector<int> edges = cornerEdgeDegree(action.testRect, rectangles);
+            action.cornerDegree=cornerDegree(edges);
+            action.edgeDegree = edgeDegree(edges);
+        }
+
+        //Step 2 sort by
+        coaSort(actions);
+
+        rectangles.push_back(actions[0].testRect);
+        unpacked.removeOne(QSize((min(actions[0].testRect.width(),actions[0].testRect.height())),
+                max(actions[0].testRect.width(),actions[0].testRect.height())));
+
+        QPoint removePoint= rectangles.last().topLeft();
+        QMutableListIterator<CoaPoint> it(coaPointsList);
+
+        while(it.hasNext()){
+            if(it.next().point==removePoint) it.remove();
+        }
+
+        for(int i = 0; i<rectangles.size()-1; i++){
+
+            QPoint coa = getIntersCoords(rectangles[i], rectangles.last());
+            if(coa.x()!=-1)
+            {
+                coaPointsList.push_back(CoaPoint(rectangles[i],rectangles.last(), coa));
+            }
+        }
+//        qDebug()<<coaPointsList.size();
+    }
+    return rectangles;
+}
+
+bool Packager2::Intersected(QRect &r, QList<QRect>& rectangles){
     bool intersected=false;
-    for(auto rect: rectangles){
+    for(auto& rect: rectangles){
         if(rect.intersects(r)){
             intersected=true;
             break;
         }
     }
     return intersected;
-
 }
 
-bool Packager2:: feasibleCOA(QRect& r, CoaPoint& cPoint ){
-    if(edgeOverlap(r, cPoint.r1) && edgeOverlap(r, cPoint.r2) && !Intersected(r))
+bool Packager2:: feasibleCOA(QRect& r, CoaPoint& cPoint, QList<QRect> & rectangles ){
+    if(edgeOverlap(r, cPoint.r1) && edgeOverlap(r, cPoint.r2) && !Intersected(r, rectangles))
         return true;
     return false;
 }
@@ -257,7 +245,6 @@ double Packager2::calcCavingDegree(CoAction& action){
                 action.cPoint.r2!=action.testRect)
             if(int a=dist(rect, action.testRect)<d)
                 d=a;
-
     }
     return 1-d/sqrt(action.testRect.width()*action.testRect.height());
 
@@ -278,7 +265,6 @@ double Packager2::dist(QRect& r1, QRect& r2){
 
     return fmax(fabs(x1-x2)-(r1.width()+r2.width())/2.0,0)+
             fmax(fabs(y1-y2)-(r1.height()+r2.height())/2.0,0);
-
 };
 
 vector<int> cornerEdgeDegree(QRect &r, QList<QRect> & list){
@@ -313,3 +299,56 @@ short int edgeDegree(vector<int>& v){
     }
     return res;
 }
+// ///////////////////////////////////////////////////
+//    while(true) {
+
+//        QList<CoAction> actions;
+//        for(auto coaPoint: coaPointsList)
+//        {
+//            for(auto& size : unpacked)
+//            {
+//                QRect r1= QRect(coaPoint.point.x(),coaPoint.point.y(), size.width(),size.height());
+//                QRect r2= QRect(coaPoint.point.x(),coaPoint.point.y(), size.height(),size.width());
+//                if(feasibleCOA(r1,coaPoint))
+//                    actions.push_back(CoAction(coaPoint, r1));
+//                if(feasibleCOA(r2,coaPoint))
+//                    actions.push_back(CoAction(coaPoint, r2));
+//            }
+//        }
+//        //No feasible COA? break
+//        if(actions.size()==0) break;//поменять на do while??//
+//        //calculation  cavingDegree, cornerDegree, edgeDegree;
+
+
+//        for(auto& action: actions) {
+//            action.cavingDegree=calcCavingDegree(action);
+//            vector<int> edges = cornerEdgeDegree(action.testRect, rectangles);
+//            action.cornerDegree=cornerDegree(edges);
+//            action.edgeDegree = edgeDegree(edges);
+//        }
+
+//        //Step 2 sort by
+//        coaSort(actions);
+
+//        rectangles.push_back(actions[0].testRect);
+//        unpacked.removeOne(QSize((min(actions[0].testRect.width(),actions[0].testRect.height())),
+//                max(actions[0].testRect.width(),actions[0].testRect.height())));
+
+//        QPoint removePoint= rectangles.last().topLeft();
+//        QMutableListIterator<CoaPoint> it(coaPointsList);
+
+//        while(it.hasNext()){
+//            if(it.next().point==removePoint) it.remove();
+//        }
+
+//        for(int i = 0; i<rectangles.size()-1; i++){
+
+//            QPoint coa = getIntersCoords(rectangles[i], rectangles.last());
+//            if(coa.x()!=-1)
+//            {
+//               // coaP.push_back(coa);
+//                coaPointsList.push_back(CoaPoint(rectangles[i],rectangles.last(), coa));
+//            }
+//        }
+//       //qDebug()<<coaPointsList.size();
+//    }
