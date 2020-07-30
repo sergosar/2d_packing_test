@@ -64,9 +64,15 @@ Window::Window()
     QPushButton *addBtn = new QPushButton("Добавить");
     QPushButton *remBtn = new QPushButton("Удалить");
 
+    QPushButton *saveBtn = new QPushButton("Сохранить раскорой");
+    QPushButton *clearBtn = new QPushButton("Очистить таблицу");
+
     QHBoxLayout *bLt = new QHBoxLayout;
     bLt->addWidget(addBtn);
     bLt->addWidget(remBtn);
+    QVBoxLayout *vblBtn = new QVBoxLayout;
+    vblBtn->addLayout(bLt);
+    vblBtn->addWidget(clearBtn);
 
     m_table = new QTableWidget;
     m_table->setColumnCount(3);
@@ -78,8 +84,12 @@ Window::Window()
 
 
     QPushButton *calcBtn = new QPushButton("Рассчитать");
-    QPushButton *clearBtn = new QPushButton("Очистить таблицу");
-    QPushButton *saveBtn = new QPushButton("Сохранить раскорой");
+
+    // ComboBox для выбора алгоритма
+    m_changeAlgCB = new QComboBox(this);
+    QStringList algs = {"Базовый", "Усложненный"};
+    m_changeAlgCB->addItems(algs);
+    m_changeAlgCB->setCurrentIndex(0);
 
     m_cbbx = new QComboBox;
 
@@ -87,14 +97,15 @@ Window::Window()
     mainLayout->addWidget(tableLbl, 2, 2, Qt::AlignRight);
     mainLayout->addLayout(hhbLt, 3, 0, Qt::AlignLeft);
     mainLayout->addLayout(whbLt, 4, 0, Qt::AlignLeft);
-    mainLayout->addLayout(bLt, 5, 0, Qt::AlignCenter);
+    mainLayout->addLayout(vblBtn, 5, 0, Qt::AlignCenter);
     mainLayout->addWidget(saveBtn, 6,0);
     mainLayout->addWidget(m_table, 3, 1, 3, 2);
     mainLayout->setColumnStretch(2, 2);
     mainLayout->setColumnStretch(1, 2);
     mainLayout->addWidget(resLbl, 7, 0, Qt::AlignCenter);
     mainLayout->addWidget(calcBtn, 7, 1, 1, 1);
-    mainLayout->addWidget(clearBtn, 7, 2, 1, 1);
+    //mainLayout->addWidget(clearBtn, 7, 2, 1, 1);
+    mainLayout->addWidget(m_changeAlgCB, 7, 2, 1, 1);
     mainLayout->addWidget(m_cbbx, 8, 0, 2, 1);
 
 
@@ -166,6 +177,8 @@ void Window::calculate()
     }
     renderArea->setSTRIPH(m_height);
     renderArea->setSTRIPW(m_width);
+    // Передаем тип алгоритма
+    renderArea->setAlgType(m_changeAlgCB->currentIndex());
     renderArea->setFixedSize(m_width+15,m_height+15);
     renderArea->fillArea(rects, m_height, m_width);
 
@@ -175,7 +188,7 @@ void Window::calculate()
     }
     renderArea->update();
 
-    qvsb->setValue(qvsb->maximum());
+    qvsb->setValue(qvsb->minimum());
  //   scrollArea->update();
 
 

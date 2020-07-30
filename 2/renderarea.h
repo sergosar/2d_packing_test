@@ -19,12 +19,16 @@ public:
     void setSTRIPW(int value);
     QList<QString> getUnList();
 
+    // Устанавливаем тип алгоритма, считанный из ComboBox'a
+    void setAlgType( int alg ) { m_algType = alg; }
+
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
     int STRIPH;
     int STRIPW;
+    int m_algType;
 
     Packager2 packager2;
 };

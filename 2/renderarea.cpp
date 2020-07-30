@@ -3,7 +3,6 @@
 #include "renderarea.h"
 #include "packager2.h"
 
-
 void RenderArea::setSTRIPH(int value)
 {
     STRIPH = value;
@@ -35,7 +34,9 @@ RenderArea::RenderArea(QWidget *parent)
 void RenderArea::fillArea(QList<QSize> rects, int H, int W)
 {
     packager2.init(rects, H , W);
-    packager2.UseAlgorithm();
+    if(this->m_algType==0)
+        packager2.UseAlgorithm();
+    else packager2.UseAlgorithm2();
 }
 
 void RenderArea::paintEvent(QPaintEvent * /* event */)
@@ -47,7 +48,6 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     if(STRIPH!=-1 && STRIPW!=-1)
         painter.drawRect(10, 10, STRIPW, STRIPH );
     painter.restore();
-
     painter.setPen(QPen(Qt::black));
 
     int minY = STRIPH;

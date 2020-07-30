@@ -43,17 +43,17 @@ private:
     double cavingDegree;
 short int cornerDegree;
 short int edgeDegree;
-
+int area=0;
+int maxBottom=0;
     };
 
     QPoint getIntersCoords(QRect &r1, QRect &r2);
     bool edgeOverlap(QRect &r1, QRect &r2);
     void coaSort(QList<CoAction> & actions);
-    QList<QRect> basicProgramm(QList<QRect> rectangles, QList<QSize> unpacked, QList<CoaPoint> coaPointsList);
-
-
-
-
+    QList<QRect> basicProgramm(QList<QRect> rectangles, QList<QSize>& unpacked, QList<CoaPoint> coaPointsList);
+    //void?
+    void basicProgramm2(QList<QRect> rectangles, QList<QSize> unpacked, QList<Packager2::CoaPoint> coaPointsList, CoAction& action);
+    void coaSort2(QList<Packager2::CoAction> &actions);
 public:
     Packager2(void){}
 
@@ -66,16 +66,10 @@ public:
     QList<QString> unList();
     QList<QRect> rectangles;
 
-
-
-
-
-
-
-
     bool Intersected(QRect &r, QList<QRect>& rectangles);
     bool feasibleCOA(QRect &r, CoaPoint &cPoint, QList<QRect> & rectangles);
     double calcCavingDegree(CoAction &action);
     double dist(QRect &r1, QRect &r2);
+    void UseAlgorithm2();
 };
 #endif // PACKEGER2_H

@@ -34,6 +34,7 @@ private:
     QLineEdit *m_wle;
     QLineEdit *m_hle;
     QComboBox *m_cbbx;
+    QComboBox *m_changeAlgCB;
     QScrollArea *scrollArea;
     QScrollBar *qvsb;
 
